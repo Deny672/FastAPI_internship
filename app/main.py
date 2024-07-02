@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 import uvicorn
-from routers.healthcheck import router as health_check
+from app.routers.healthcheck import router as health_check
 
 app = FastAPI()
 

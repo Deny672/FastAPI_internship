@@ -5,6 +5,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+#.vsocde
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
 # C extensions
 *.so
 
