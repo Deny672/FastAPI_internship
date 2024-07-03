@@ -1,0 +1,12 @@
+.git
+
+README.MD
+
+.env
+
+.gitignore
+.env.sample
+
+__pycache__/
+*.py[cod]
+*$py.class
