@@ -8,6 +8,9 @@ Unix system:
 
 git clone https://github.com/Deny672/Meduzzen_Backend_Fastapi cd Meduzzen_Backend_Fastapi pip install pipenv python3 -m venv venv source venv/bin/activate pip install -r requirements_base.txt uvicorn app.main:app --host 127.0.0.1 --port 8056 --reload
 
+To run the application in Docker:
+
+git clone https://github.com/Deny672/Meduzzen_Backend_Fastap cd Meduzzen_Backend_Fastapi docker compose up
 
 To run the test
 pip install -r requirements_dev.txt
