@@ -2,8 +2,8 @@ from fastapi.testclient import TestClient
 from app.main import app
 import redis.asyncio as aioredis
 
-client = TestClient(app)
 
+client = TestClient(app)
 
 def test_read_main():
     response = client.get("healthcheck/")
@@ -23,6 +23,11 @@ def test_postgres_health_check():
         "result": "postgres working"
     }
 
-def test_redis_health_check():
+def test_redis_healthcheck_success():
     response = client.get("/healthcheck/redis")
-    assert response.status_code in {200, 500}, f"Unexpected status code: {response.status_code}"
+    assert response.status_code == 200
+    assert response.json() == {
+        "status_code": 200,
+        "detail": "ok",
+        "result": "redis working"
+        }
