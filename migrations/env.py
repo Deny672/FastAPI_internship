@@ -1,6 +1,6 @@
 import asyncio
 from logging.config import fileConfig
-
+import logging
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
@@ -9,6 +9,16 @@ from alembic import context
 
 from app.core.config import settings
 from app.db.models import Base
+
+
+# Настройка логгера
+logger = logging.getLogger('alembic')
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler()
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

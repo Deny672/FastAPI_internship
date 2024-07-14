@@ -5,6 +5,7 @@ from sqlalchemy.future import select
 import redis.asyncio as aioredis
 
 from app.db.postgres_session import get_session
+from app.db.test_db import get_session as test_get_session
 from app.db.redis_session import get_redis
 
 
@@ -27,6 +28,15 @@ async def postgres_health_check(session: AsyncSession = Depends(get_session)):
         "status_code": 200,
         "detail": "ok",
         "result": "postgres working"
+    }
+
+@router.get("/test_postgres")
+async def postgres_health_check(session: AsyncSession = Depends(test_get_session)):
+    await session.execute(select(1))
+    return {
+        "status_code": 200,
+        "detail": "ok",
+        "result": "test_postgres working"
     }
 
 @router.get("/redis")
