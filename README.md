@@ -10,8 +10,7 @@ git clone https://github.com/Deny672/Meduzzen_Backend_Fastapi cd Meduzzen_Backen
 
 To run the application in Docker:
 You must fill in the .env file, POSTGRES_HOST=db
-git clone https://github.com/Deny672/Meduzzen_Backend_Fastap cd Meduzzen_Backend_Fastapi docker compose up docker-compose exec app alembic upgrade head
-
+git clone https://github.com/Deny672/Meduzzen_Backend_Fastap cd Meduzzen_Backend_Fastapi docker-compose -f docker-compose.yaml up docker-compose exec app alembic upgrade head
 
 
 To run the test
