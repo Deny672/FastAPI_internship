@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 from app.routers.healthcheck import router as health_check
-from app.routers.user import router as user
+
 
 app = FastAPI()
 
@@ -16,5 +17,4 @@ app.add_middleware(
 )
 
 
-app.include_router(user)
 app.include_router(health_check)
