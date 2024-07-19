@@ -1,6 +1,5 @@
 from fastapi.testclient import TestClient
 from app.main import app
-import redis.asyncio as aioredis
 
 
 client = TestClient(app)
