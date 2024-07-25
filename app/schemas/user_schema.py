@@ -13,11 +13,11 @@ class UserSchema(BaseModel):
     avatar: str | None = Field(None, max_length=255)
     is_superuser: bool = False
     is_active: bool = True
-    created_at: datetime
-    updated_at: datetime
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class SignInRequest(BaseModel):

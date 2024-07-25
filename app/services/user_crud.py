@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from app.core.security import hash_password, is_password_strong_enough
 from app.core.config import settings
 from app.db.models import User
-from app.schemas.user_schema import UserDetailResponse, UsersListResponse, UserUpdateRequest, SignUpRequest, SignInRequest, UserSchema
+from app.schemas.user_schema import UserUpdateRequest, SignUpRequest, UserSchema
 from app.db.postgres_session import get_session
 
 
@@ -15,52 +15,71 @@ async def user_by_id(user_id: int, session: AsyncSession = Depends(get_session))
     user = result.scalars().first()
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    return user
+    return {"user": UserSchema.model_validate(user)}
 
 
 async def get_users(session: AsyncSession = Depends(get_session)):
     result = await session.execute(select(User))
     users = result.scalars().all()
     if not users:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No users found")
-    return users
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Users do not exist")
+    users_for_return = [UserSchema.model_validate(user) for user in users]
+    return {"users": users_for_return}
 
 
 async def create_user(session: AsyncSession, user: SignUpRequest) -> User:
-    user_exist = session.execute(select(User).filter(User.email == user.email).first())
-    if user_exist:
+    
+    if user.password1 != user.password2:
+        raise HTTPException(status_code=400, detail="The password don't match")
+    
+    user_exist = await session.execute(select(User).filter(User.email == user.email))
+
+    if user_exist.scalars().first():
         raise HTTPException(status_code=400, detail="Email is already exists.")
 
-    if not await is_password_strong_enough(user.password):
+    if not await is_password_strong_enough(user.password1):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Password is not strong enough",
         )
+    hashed_password = hash_password(user.password1)
+    user_data = User()
+    user_data.email = user.email
+    user_data.hashed_password = hashed_password
+    user_data.first_name = user.first_name
+    user_data.last_name = user.last_name
+    user_data.city = user.city
+    user_data.phone = user.phone
+    user_data.avatar = user.avatar
+    session.add(user_data)
+    await session.commit()
+    await session.refresh(user_data)
+    return {"user": UserSchema.model_validate(user_data)}
 
-    hashed_password = await hash_password(user.password)
-    user_data = user.model_dump()
-    user_data['password'] = hashed_password
-    db_user = User(**user_data)
-    session.add(db_user)
-    session.commit()
-    return db_user
 
-
-async def update_user(session: AsyncSession, id: int, user: UserUpdateRequest) -> User:
-    db_user = await user_by_id(session, id)
-    if not db_user:
+async def update_user(user_id: int, user_update: UserUpdateRequest, session: AsyncSession):
+    result = await session.execute(select(User).filter(User.id == user_id))
+    user = result.scalars().first()
+    
+    if user is None:
         raise HTTPException(status_code=404, detail="User not found")
+    
+    for key, value in user_update.model_dump(exclude_unset=True).items():
+        setattr(user, key, value)
+    
+    await session.commit()
+    await session.refresh(user)
+    return {"user": UserSchema.model_validate(user)}
 
-    for k, v in user.model_dump(exclude_unset=True).items():
-        setattr(db_user, k, v)
+    
 
-    try:
-        await session.commit()
-        await session.refresh(db_user)
-        return db_user
-    except IntegrityError:
-        session.rollback()
-        raise HTTPException(
-            status_code=409,
-            detail="Updated user collides with other users",
-        )
+async def delete_user(user_id: int, session: AsyncSession):
+    result = await session.execute(select(User).filter(User.id == user_id))
+    user = result.scalars().first()
+    
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    await session.delete(user)
+    await session.commit()
+    return "User deleted"

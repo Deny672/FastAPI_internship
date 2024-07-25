@@ -4,7 +4,7 @@ SPECIAL_CHARACTERS = ['@', '#', '$', '%', '=', ':', '?', '.', '/', '|', '~', '>'
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-async def hash_password(password):
+def hash_password(password):
     return pwd_context.hash(password)
 
 async def is_password_strong_enough(password: str) -> bool:
