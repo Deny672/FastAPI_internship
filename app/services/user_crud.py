@@ -18,8 +18,9 @@ async def user_by_id(user_id: int, session: AsyncSession = Depends(get_session))
     return {"user": UserSchema.model_validate(user)}
 
 
-async def get_users(session: AsyncSession = Depends(get_session)):
-    result = await session.execute(select(User))
+async def get_users(limit: int, offset: int, session: AsyncSession = Depends(get_session)):
+    offset *=limit
+    result = await session.execute(select(User).order_by(User.id).offset(offset).limit(limit))
     users = result.scalars().all()
     if not users:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Users do not exist")

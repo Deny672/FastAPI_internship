@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, HTTPException, Depends, status, APIRouter
+from fastapi import FastAPI, HTTPException, Depends, status, APIRouter, Query
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
@@ -19,8 +19,11 @@ async def user_by_id_route(user_id: int, session: AsyncSession = Depends(get_ses
 
 
 @router.get("/all", response_model=UsersListResponse)
-async def get_all_users_route(session: AsyncSession = Depends(get_session)):
-    return await get_users(session = session)
+async def get_all_users_route(
+    limit: int = Query(default=3, ge=1),
+    offset: int = Query(default=0, ge=0),
+    session: AsyncSession = Depends(get_session)):
+    return await get_users(limit=limit, offset=offset, session = session)
 
 
 @router.post("/", response_model=UserDetailResponse)
