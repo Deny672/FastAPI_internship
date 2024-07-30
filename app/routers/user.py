@@ -26,7 +26,7 @@ async def get_all_users_route(
     return await get_users(limit=limit, offset=offset, session = session)
 
 
-@router.post("/", response_model=UserDetailResponse)
+@router.post("/", response_model=UserDetailResponse, status_code=201)
 async def create_user_route(user_create: SignUpRequest, session: AsyncSession = Depends(get_session)):
     return await create_user(session=session, user=user_create)
 
@@ -36,6 +36,6 @@ async def update_user_route(user_id: int, new_data: UserUpdateRequest, session: 
     return await update_user(user_id, session=session, user_update=new_data)
 
 
-@router.delete("/{user_id}")
+@router.delete("/{user_id}", response_model=dict)
 async def delete_user_route(user_id: int, session: AsyncSession = Depends(get_session)):
     return await delete_user(user_id, session)

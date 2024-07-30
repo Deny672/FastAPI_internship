@@ -21,7 +21,7 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 
-async def user_by_id(user_id: int, session: AsyncSession = Depends(get_session)):
+async def user_by_id(user_id: int, session: AsyncSession):
     logger.info(f"Fetching user by id: {user_id}")
     result = await session.execute(select(User).filter(User.id == user_id))
     user = result.scalars().first()
@@ -32,7 +32,7 @@ async def user_by_id(user_id: int, session: AsyncSession = Depends(get_session))
     return {"user": UserSchema.model_validate(user)}
 
 
-async def get_users(limit: int, offset: int, session: AsyncSession = Depends(get_session)):
+async def get_users(limit: int, offset: int, session: AsyncSession):
     offset *=limit
     logger.info(f"Fetching users with limit: {limit}, offset: {offset}")
     result = await session.execute(select(User).order_by(User.id).offset(offset).limit(limit))
@@ -109,4 +109,4 @@ async def delete_user(user_id: int, session: AsyncSession):
     await session.delete(user)
     await session.commit()
     logger.info(f"User deleted successfully: {user_id}")
-    return "User deleted"
+    return {"message": "User deleted"}
