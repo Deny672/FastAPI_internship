@@ -4,9 +4,9 @@ from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.db.models import User
-
+from typing import List
 from app.services.user_crud import user_by_id, create_user, get_users, update_user, delete_user
-from app.schemas.user_schema import UserDetailResponse, UsersListResponse, UserUpdateRequest, SignUpRequest, SignInRequest, UserSchema
+from app.schemas.user_schema import UserDetailResponse, UserUpdateRequest, SignUpRequest
 from app.db.postgres_session import get_session
 
 
@@ -18,7 +18,7 @@ async def user_by_id_route(user_id: int, session: AsyncSession = Depends(get_ses
     return await user_by_id(user_id=user_id, session=session)
 
 
-@router.get("/all", response_model=UsersListResponse)
+@router.get("/all", response_model=List[UserDetailResponse])
 async def get_all_users_route(
     limit: int = Query(default=3, ge=1),
     offset: int = Query(default=0, ge=0),
@@ -36,6 +36,6 @@ async def update_user_route(user_id: int, new_data: UserUpdateRequest, session: 
     return await update_user(user_id, session=session, user_update=new_data)
 
 
-@router.delete("/{user_id}", response_model=dict)
+@router.delete("/{user_id}", response_model=UserDetailResponse)
 async def delete_user_route(user_id: int, session: AsyncSession = Depends(get_session)):
     return await delete_user(user_id, session)

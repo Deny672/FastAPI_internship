@@ -92,7 +92,7 @@ async def test_update_user(client):
     response = await client.put("/users/1", json=user_data)
     assert response.status_code == 200
     data_resp = response.json()
-    assert data_resp["user"]["first_name"] == "string"
+    assert data_resp["first_name"] == "string"
 
 
 @pytest.mark.asyncio

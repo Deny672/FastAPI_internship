@@ -5,7 +5,7 @@ import logging
 
 from app.core.security import hash_password, is_password_strong_enough
 from app.db.models import User
-from app.schemas.user_schema import UserUpdateRequest, SignUpRequest, UserSchema
+from app.schemas.user_schema import UserUpdateRequest, SignUpRequest, UserDetailResponse
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -28,7 +28,7 @@ async def user_by_id(user_id: int, session: AsyncSession):
         logger.warning(f"User not found: {user_id}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     logger.info(f"User fetched successfully: {user_id}")
-    return {"user": UserSchema.model_validate(user)}
+    return UserDetailResponse.model_validate(user)
 
 
 async def get_users(limit: int, offset: int, session: AsyncSession):
@@ -39,9 +39,9 @@ async def get_users(limit: int, offset: int, session: AsyncSession):
     if not users:
         logger.warning("Users not found")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Users do not exist")
-    users_for_return = [UserSchema.model_validate(user) for user in users]
+    users_for_return = [UserDetailResponse.model_validate(user) for user in users]
     logger.info("Users fetched successfully")
-    return {"users": users_for_return}
+    return users_for_return
 
 
 async def create_user(session: AsyncSession, user: SignUpRequest) -> User:
@@ -75,7 +75,7 @@ async def create_user(session: AsyncSession, user: SignUpRequest) -> User:
     await session.commit()
     await session.refresh(user_data)
     logger.info(f"User created successfully: {user_data.email}")
-    return {"user": UserSchema.model_validate(user_data)}
+    return UserDetailResponse.model_validate(user_data)
 
 
 async def update_user(user_id: int, user_update: UserUpdateRequest, session: AsyncSession):
@@ -93,7 +93,7 @@ async def update_user(user_id: int, user_update: UserUpdateRequest, session: Asy
     await session.commit()
     await session.refresh(user)
     logger.info(f"User updated successfully: {user_id}")
-    return {"user": UserSchema.model_validate(user)}
+    return UserDetailResponse.model_validate(user)
 
 
 async def delete_user(user_id: int, session: AsyncSession):
@@ -108,4 +108,4 @@ async def delete_user(user_id: int, session: AsyncSession):
     await session.delete(user)
     await session.commit()
     logger.info(f"User deleted successfully: {user_id}")
-    return {"message": "User deleted"}
+    return user
