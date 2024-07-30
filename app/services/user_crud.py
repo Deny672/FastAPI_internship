@@ -1,4 +1,4 @@
-from fastapi import HTTPException, Depends, status, APIRouter
+from fastapi import HTTPException, status
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 import logging
@@ -6,7 +6,6 @@ import logging
 from app.core.security import hash_password, is_password_strong_enough
 from app.db.models import User
 from app.schemas.user_schema import UserUpdateRequest, SignUpRequest, UserSchema
-from app.db.postgres_session import get_session
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

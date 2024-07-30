@@ -6,7 +6,7 @@ from sqlalchemy import NullPool
 from app.core.config import settings
 from app.db.postgres_session import get_session as get_db
 from app.main import app
-from app.db.models import Base, User
+from app.db.models import Base
 
 
 @pytest_asyncio.fixture(scope="session")
