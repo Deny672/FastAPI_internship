@@ -6,3 +6,5 @@ redis==5.0.7
 asyncpg==0.29.0
 alembic==1.13.2
 SQLAlchemy-Utils==0.41.2
+passlib==1.7.4
+bcrypt==4.0.1
